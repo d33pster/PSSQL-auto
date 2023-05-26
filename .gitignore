@@ -1,0 +1,5 @@
+/build
+/dist
+main/usage-files/
+tester.py
+pssqla.spec
