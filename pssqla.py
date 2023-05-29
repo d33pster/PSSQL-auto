@@ -100,13 +100,14 @@ def menu_load():
         print("active DF changed!")
         time.sleep(2.6)
         refresh()
-        menu_load()
-    elif choice==0:
         print(f"active --> {active}")
-        print("Loading...")
-        time.sleep(4)
-        refresh()
         menu_load()
+    #elif choice==0:
+    #    print(f"active --> {active}")
+    #    print("Loading...")
+    #    time.sleep(4)
+    #    refresh()
+    #    menu_load()
     elif choice==2:
         for item in DataFrames:
             if not item["Name"] == active:
@@ -116,6 +117,7 @@ def menu_load():
                 print(f"{item['df'].show()}")
                 code_choke = input("~Press Enter to continue~")
                 refresh()
+                print(f"active --> {active}")
                 menu_load()
     elif choice==3:
         dColumn = input("column to delete: ")
@@ -128,6 +130,18 @@ def menu_load():
                 print(item["df"].show())
                 code_choke = input("~Press Enter to continue~")
                 refresh()
+                print(f"active --> {active}")
+                menu_load()
+    elif choice==4:
+        for item in DataFrames:
+            if not item["Name"]==active:
+                continue
+            else:
+                query = item["df"].select("*").limit(10)
+                query.show()
+                code_choke = input("~Press Enter to Continue~")
+                refresh()
+                print(f"active --> {active}")
                 menu_load()
     elif choice==99:
         return
@@ -135,6 +149,7 @@ def menu_load():
         print("Error!")
         print("RECONFIGURING...")
         time.sleep(3)
+        print(f"active --> {active}")
         menu_load()
     return
 
