@@ -38,7 +38,7 @@ refresh()
 nf = int(input("Number of csv files to be imported\n:: "))
 Filenames = []
 for i in range(nf):
-    print(f"File[{i+1}] absolute path: ")
+    print(f"File [{i+1}] absolute path: ")
     file = input()
     filename = file.split("\\")[-1]
     #subprocess.run(['copy', file, os.path.join(os.path.join(os.path.join(os.getcwd(), "main"),"usage-files"), filename)], shell=True)
