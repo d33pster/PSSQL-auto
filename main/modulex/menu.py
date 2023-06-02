@@ -7,6 +7,7 @@ def menu():
     print("[2] Show")
     print("[3] Drop a column")
     print("[4] Show top 10 entries")
+    print("[5] Export current DataFrame into .csv")
     print("\n[99]Exit")
     
     print("\n")
