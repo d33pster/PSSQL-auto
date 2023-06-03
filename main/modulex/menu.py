@@ -6,8 +6,8 @@ def menu():
     print("\nFunctions:")
     print("[111] Change active DataFrame")
     print("[222] Export current DataFrame into .csv")
-    #print("[333] Add more files")
-    #change output-directory
+    print("[333] Add more files")
+    print("[444] Make custom output directory") #/Move output files
     
     print("\nQueries:")
     print("[1] Show")

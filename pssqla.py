@@ -39,49 +39,61 @@ spark = SparkSession.builder.appName("SparkApp").getOrCreate()
 refresh()
 
 #storing file locations
-nf = int(input("Number of csv files to be imported\n:: "))
 Filenames = []
-for i in range(nf):
-    print(f"File [{i+1}] absolute path: ")
-    file = input()
-    filename = file.split("\\")[-1]
-    #subprocess.run(['copy', file, os.path.join(os.path.join(os.path.join(os.getcwd(), "main"),"usage-files"), filename)], shell=True)
-    #geting filename without extention
-    filename_wx = os.path.splitext(file)[0]
-    filename_wx = filename_wx.split("\\")[-1]
-    temp = {"Name": filename_wx, "Location": file}
-    Filenames.append(temp)
 Filenames_lo = []
-for item in Filenames:
-    print("\nLocalising ...")
-    subprocess.run(['copy', item["Location"], os.path.join(os.path.join(os.path.join(os.getcwd(), "main"),"usage-files"), item["Location"].split("\\")[-1])], shell=True)
-    temp = {"Name": item["Name"], "Location": os.path.join(os.path.join(os.path.join(os.getcwd(), "main"),"usage-files"), item["Location"].split("\\")[-1])}
-    Filenames_lo.append(temp)
-refresh()
-
-
-
-
-#Creating data frames...
 DataFrames = []
-print("Processing...")
-time.sleep(1)
 
-for itemz in Filenames_lo:
-    filename = itemz['Location'].split('\\')[-1]
-    print(f"Creating dataframe {itemz['Name']} from {filename} ...")
-    df = spark.read.format('csv').option('inferSchema', True).option('header', True).load(itemz["Location"])
-    print(f"Dropping Null rows...")
-    df = df.na.drop()
-    temp = {"Name": itemz["Name"], "df": df}
-    DataFrames.append(temp)
+def readFile(current_filecount) -> int:
+    nf = int(input("Number of csv files to be imported\n:: "))
+    count = nf + current_filecount
+    for i in range(nf):
+        print(f"File [{i+1+current_filecount}] absolute path: ")
+        file = input()
+        #filename = file.split("\\")[-1]
+        filename_wx = os.path.splitext(file)[0]
+        filename_wx = filename_wx.split("\\")[-1]
+        temp = {"Name": filename_wx, "Location": file}
+        Filenames.append(temp)
+    #Localising Filenames
+    a=0
+    for item in Filenames:
+        if a<current_filecount:
+            a=a+1
+            continue
+        print("\nLocalising ...")
+        caller = subprocess.run(['copy', item["Location"], os.path.join(os.path.join(os.path.join(os.getcwd(), "main"),"usage-files"), item["Location"].split("\\")[-1])], shell=True)
+        time.sleep(1.5)
+        temp = {"Name": item["Name"], "Location": os.path.join(os.path.join(os.path.join(os.getcwd(), "main"),"usage-files"), item["Location"].split("\\")[-1])}
+        Filenames_lo.append(temp)
+    refresh()
+    #Creating data frames...
+    print("Processing...")
+    time.sleep(1)
+    a=0
+    for itemz in Filenames_lo:
+        if a<current_filecount:
+            a=a+1
+            continue
+        filename = itemz['Location'].split('\\')[-1]
+        print(f"Creating dataframe {itemz['Name']} from {filename} ...")
+        df = spark.read.format('csv').option('inferSchema', True).option('header', True).load(itemz["Location"])
+        print(f"Dropping Null rows...")
+        df = df.na.drop()
+        temp = {"Name": itemz["Name"], "df": df}
+        DataFrames.append(temp)
+    print("Dataframes created and stored Successfully..")
+    return count
 
-print("Dataframes created and stored Successfully..")
-
+file_count = readFile(0) #init
+output_dir = None
 #creating filer for menu
-def filer(DataFrame):
+def filer(DataFrame, output_direc):
+    global output_dir
+    output_dir = output_direc
     file_name = input("filename (W/O extention): ")
-    filepath = os.path.join(os.path.join(os.path.join(os.getcwd(), "main"),"output-files"), file_name+".csv")
+    if output_dir==None:
+        output_dir = os.path.join(os.path.join(os.getcwd(), "main"),"output-files")
+    filepath = os.path.join(output_dir, file_name+".csv")
     if os.path.exists(filepath):
         print(f"\nA File named {file_name} already exists..\nPress 0 to overwrite :: Press 1 to create new:")
         filer_ch = int(input(":: "))
@@ -90,7 +102,7 @@ def filer(DataFrame):
                 if i==0:
                     continue
                 suffix = str(i)
-                filepath_tmp = os.path.join(os.path.join(os.path.join(os.getcwd(), "main"),"output-files"), file_name+"["+suffix+"].csv")
+                filepath_tmp = os.path.join(output_dir, file_name+"["+suffix+"].csv")
                 if not os.path.exists(filepath_tmp):
                     DataFrame.toPandas().to_csv(filepath_tmp)
                     print(f"\nFile Exported Succesfully to {filepath_tmp}")
@@ -104,7 +116,7 @@ def filer(DataFrame):
             print("Invalid Input!")
             print("RECONFIGURING FROM LAST CHECKPOINT....")
             time.sleep(4)
-            filer(DataFrame)
+            filer(DataFrame, output_dir)
     else:
         DataFrame.toPandas().to_csv(filepath)
         print(f"\nFile Exported Succesfully to {filepath}")
@@ -129,7 +141,7 @@ active = menu_startup()
 def menu_load():
         
     choice = menu()
-    global active
+    global active, file_count, output_dir
     #menu-driver
     refresh()
     if choice==111:
@@ -137,7 +149,7 @@ def menu_load():
         print("active DF changed!")
         time.sleep(2.6)
         refresh()
-        print(green(f"active --> {active}", 'bink'))
+        print(green(f"active --> {active}", 'blink'))
         menu_load()
     elif choice==1: #show
         for item in DataFrames:
@@ -146,7 +158,7 @@ def menu_load():
                 print(f"{item['df'].show()}")
                 code_choke = input("~Press Enter to continue~")
                 refresh()
-                print(green(f"active --> {active}", 'bink'))
+                print(green(f"active --> {active}", 'blink'))
                 menu_load()
     elif choice==2: #del column
         dColumn = input("column to delete: ")
@@ -157,7 +169,7 @@ def menu_load():
                 print(item["df"].show())
                 code_choke = input("~Press Enter to continue~")
                 refresh()
-                print(green(f"active --> {active}", 'bink'))
+                print(green(f"active --> {active}", 'blink'))
                 menu_load()
     elif choice==3: #top10
         for item in DataFrames:
@@ -166,22 +178,36 @@ def menu_load():
                 query.show()
                 code_choke = input("~Press Enter to Continue~")
                 refresh()
-                print(green(f"active --> {active}", 'bink'))
+                print(green(f"active --> {active}", 'blink'))
                 menu_load()
     elif choice==222: #export to csv
         for item in DataFrames:
             if item["Name"]==active:
-                filer(item["df"])
+                filer(item["df"], output_dir)
                 refresh()
                 print(green(f"active --> {active}", 'blink'))
                 menu_load()
+    elif choice==333: #add more files
+        file_count = readFile(file_count)
+        refresh()
+        active = menu_startup()
+        menu_load()
+    elif choice==444: #customize output dir
+        new_output_path = input(cyan("New Output Path: "))
+        output_dir = new_output_path
+        print(cyan(f"\nOutput Directory Changed to -> {output_dir}"))
+        print(red("All further outputs will be saved Here!", 'bright'))
+        time.sleep(4.5)
+        refresh()
+        print(green(f"active --> {active}", 'blink'))
+        menu_load()
     elif choice==99:
         return
     else:
         print("Error!")
         print("RECONFIGURING...")
         time.sleep(3)
-        print(green(f"active --> {active}", 'bink'))
+        print(green(f"active --> {active}", 'blink'))
         menu_load()
     return
 
