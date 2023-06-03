@@ -9,4 +9,5 @@ This Project contains a python app for data analysis using Pyspark SQL
 2. python pssqla.py
 ## Linux
 1. chmod +x ./PSSQL-auto/pssqla.py
-2. ./PSSQL-auto/pssqla.py
+2. cd ./PSSQL-auto
+3. python ./pssqla.py
