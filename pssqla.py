@@ -4,14 +4,16 @@
 import os
 import subprocess
 import time
+from simple_colors import *
+
 from main.modulex.refresh import refresh
 
 #Initial Checking and installations...
 subprocess.run("cls", shell=True)
 with open(os.path.join(os.path.join(os.getcwd(), "main"), "logo.txt")) as logo:
-    print(logo.read())
+    print(red(logo.read(), 'bright'))
 print("\n")
-print("Initialising...")
+print(green("Initialising...", 'blink'))
 time.sleep(2)
 print("\n\n")
 subprocess.run(['python.exe', '-m', 'pip', 'install', '--upgrade', 'pip'], shell=True)
@@ -91,12 +93,12 @@ def filer(DataFrame):
                 filepath_tmp = os.path.join(os.path.join(os.path.join(os.getcwd(), "main"),"output-files"), file_name+"["+suffix+"].csv")
                 if not os.path.exists(filepath_tmp):
                     DataFrame.toPandas().to_csv(filepath_tmp)
-                    print(f"\nFile Exported Succesfullt to {filepath_tmp}")
+                    print(f"\nFile Exported Succesfully to {filepath_tmp}")
                     code_choke = input("\n~~Press Enter to Continue~~")
                     break
         elif filer_ch==0:
             DataFrame.toPandas().to_csv(filepath)
-            print(f"\nFile Exported Succesfullt to {filepath}")
+            print(f"\nFile Exported Succesfully to {filepath}")
             code_choke = input("\n~~Press Enter to Continue~~")
         else:
             print("Invalid Input!")
@@ -105,7 +107,7 @@ def filer(DataFrame):
             filer(DataFrame)
     else:
         DataFrame.toPandas().to_csv(filepath)
-        print(f"\nFile Exported Succesfullt to {filepath}")
+        print(f"\nFile Exported Succesfully to {filepath}")
         code_choke = input("\n~~Press Enter to Continue~~")
 
 #Creating menu
@@ -130,23 +132,23 @@ def menu_load():
     global active
     #menu-driver
     refresh()
-    if choice==1:
+    if choice==111:
         active = menu_startup()
         print("active DF changed!")
         time.sleep(2.6)
         refresh()
-        print(f"active --> {active}")
+        print(green(f"active --> {active}", 'bink'))
         menu_load()
-    elif choice==2:
+    elif choice==1: #show
         for item in DataFrames:
             if item["Name"] == active:
                 print(f"DataFrame {active}:")
                 print(f"{item['df'].show()}")
                 code_choke = input("~Press Enter to continue~")
                 refresh()
-                print(f"active --> {active}")
+                print(green(f"active --> {active}", 'bink'))
                 menu_load()
-    elif choice==3:
+    elif choice==2: #del column
         dColumn = input("column to delete: ")
         for item in DataFrames:
             if item["Name"]==active:
@@ -155,23 +157,23 @@ def menu_load():
                 print(item["df"].show())
                 code_choke = input("~Press Enter to continue~")
                 refresh()
-                print(f"active --> {active}")
+                print(green(f"active --> {active}", 'bink'))
                 menu_load()
-    elif choice==4:
+    elif choice==3: #top10
         for item in DataFrames:
             if item["Name"]==active:
                 query = item["df"].select("*").limit(10)
                 query.show()
                 code_choke = input("~Press Enter to Continue~")
                 refresh()
-                print(f"active --> {active}")
+                print(green(f"active --> {active}", 'bink'))
                 menu_load()
-    elif choice==5:
+    elif choice==222: #export to csv
         for item in DataFrames:
             if item["Name"]==active:
                 filer(item["df"])
                 refresh()
-                print(f"active --> {active}")
+                print(green(f"active --> {active}", 'blink'))
                 menu_load()
     elif choice==99:
         return
@@ -179,9 +181,23 @@ def menu_load():
         print("Error!")
         print("RECONFIGURING...")
         time.sleep(3)
-        print(f"active --> {active}")
+        print(green(f"active --> {active}", 'bink'))
         menu_load()
     return
 
 menu_load()
 
+#concluder
+def concluder(): 
+    print(cyan("\nCleaning Up...", 'blink'))
+    time.sleep(2)
+    for item in Filenames_lo:
+        os.remove(item['Location'])
+        print(red(f"Deleted {item['Name']} from local directory {item['Location']}."))
+    time.sleep(3)
+    refresh()
+    print(cyan("\nQuiting..."))
+    time.sleep(2)
+    os.system("cls")
+    
+concluder()
