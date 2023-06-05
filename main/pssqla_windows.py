@@ -47,7 +47,7 @@ def readFile(current_filecount) -> int:
     nf = int(input(cyan("Number of csv files to be imported\n:: ")))
     count = nf + current_filecount
     for i in range(nf):
-        print(f"File [{i+1+current_filecount}] absolute path: ")
+        print(cyan(f"File [{i+1+current_filecount}] absolute path: "), end=" ")
         file = input()
         #filename = file.split("\\")[-1]
         filename_wx = os.path.splitext(file)[0]

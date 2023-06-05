@@ -41,9 +41,10 @@ DataFrames = []
 
 def readFile(current_filecount) -> int:
     nf = int(input(cyan("Number of csv files to be imported\n:: ")))
+    refresh_linux()
     count = nf + current_filecount
     for i in range(nf):
-        print(cyan(f"File [{i+1+current_filecount}] absolute path: "))
+        print(cyan(f"File [{i+1+current_filecount}] absolute path: "), end=" ")
         file = input()
         #filename = file.split("\\")[-1]
         filename_wx = os.path.splitext(file)[0]
@@ -57,13 +58,13 @@ def readFile(current_filecount) -> int:
         if a<current_filecount:
             a=a+1
             continue
-        caller = os.system(f"mv {item['Location']} {os.path.join(os.path.join(os.path.join(os.getcwd(), 'main'),'usage-files'), item['Location'].split('/')[-1])}")
+        caller = os.system(f"cp {item['Location']} {os.path.join(os.path.join(os.path.join(os.getcwd(), 'main'),'usage-files'), item['Location'].split('/')[-1])}")
         time.sleep(1.5)
         temp = {"Name": item["Name"], "Location": os.path.join(os.path.join(os.path.join(os.getcwd(), "main"),"usage-files"), item["Location"].split("/")[-1])}
         Filenames_lo.append(temp)
     refresh_linux()
     #Creating data frames...
-    print(green("Processing..."))
+    print(green("Processing...", 'blink'))
     time.sleep(1)
     a=0
     for itemz in Filenames_lo:
@@ -79,7 +80,7 @@ def readFile(current_filecount) -> int:
         time.sleep(1)
         temp = {"Name": itemz["Name"], "df": df}
         DataFrames.append(temp)
-    print(green("Dataframes created and stored Successfully..", 'blink'))
+    print(green("\nDataframes created and stored Successfully.."))
     time.sleep(2)
     return count
 
@@ -119,7 +120,7 @@ def filer(DataFrame, output_direc):
     else:
         DataFrame.toPandas().to_csv(filepath)
         print(green(f"\nFile Exported Succesfully to {filepath}"))
-        code_choke = (input("\n~~Press Enter to Continue~~", 'blink'))
+        code_choke = input(cyan("\n~~Press Enter to Continue~~", 'blink'))
 
 #Creating menu
 from modulex.menu import menu
@@ -133,14 +134,15 @@ def menu_startup():
     print("\n")
     menu_df_active = input(cyan("Use (name)--> ", 'blink'))   #Active DF
     print("\n")
+    refresh_linux()
     return menu_df_active
     
 active = menu_startup()
 
 def menu_load():
-        
-    choice = menu()
     global active, file_count, output_dir
+    print(green(f"active --> {active}", 'blink'))
+    choice = menu()
     #menu-driver
     refresh_linux()
     if choice==111:
@@ -148,7 +150,6 @@ def menu_load():
         print(green("active DF changed!", 'blink'))
         time.sleep(2.6)
         refresh_linux()
-        print(green(f"active --> {active}", 'blink'))
         menu_load()
     elif choice==1: #show
         for item in DataFrames:
@@ -157,7 +158,6 @@ def menu_load():
                 print(item['df'].show())
                 code_choke = input(cyan("~Press Enter to continue~", 'blink'))
                 refresh_linux()
-                print(green(f"active --> {active}", 'blink'))
                 menu_load()
     elif choice==2: #del column
         dColumn = input(cyan("column to delete: "))
@@ -168,7 +168,6 @@ def menu_load():
                 print(item["df"].show())
                 code_choke = input(cyan("~Press Enter to continue~", 'blink'))
                 refresh_linux()
-                print(green(f"active --> {active}", 'blink'))
                 menu_load()
     elif choice==3: #top10
         for item in DataFrames:
@@ -177,14 +176,12 @@ def menu_load():
                 query.show()
                 code_choke = input(cyan("~Press Enter to Continue~", 'blink'))
                 refresh_linux()
-                print(green(f"active --> {active}", 'blink'))
                 menu_load()
     elif choice==222: #export to csv
         for item in DataFrames:
             if item["Name"]==active:
                 filer(item["df"], output_dir)
                 refresh_linux()
-                print(green(f"active --> {active}", 'blink'))
                 menu_load()
     elif choice==333: #add more files
         file_count = readFile(file_count)
@@ -198,7 +195,6 @@ def menu_load():
         print(red("All further outputs will be saved Here!", ['bright', 'blink']))
         time.sleep(4.5)
         refresh_linux()
-        print(green(f"active --> {active}", 'blink'))
         menu_load()
     elif choice==99:
         return
@@ -206,7 +202,6 @@ def menu_load():
         print(red("Error!", 'blink'))
         print(yellow("RECONFIGURING..."))
         time.sleep(3)
-        print(green(f"active --> {active}", 'blink'))
         menu_load()
     return
 
