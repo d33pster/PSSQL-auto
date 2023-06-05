@@ -64,7 +64,7 @@ def readFile(current_filecount) -> int:
         Filenames_lo.append(temp)
     refresh_linux()
     #Creating data frames...
-    print(green("Processing...", 'blink'))
+    print(yellow("Processing...", 'blink'))
     time.sleep(1)
     a=0
     for itemz in Filenames_lo:

@@ -1,5 +1,18 @@
 #!/usr/bin/env python
 
+
+# ~~~~~~~~~~~~~~~~~~ Next Update ~~~~~~~~~~~~~~~~~~~
+# ~~~ add custom query
+# ~~~ add pipeline
+# ~~~ colour coded menu
+# ~~~ refresh code placement
+#
+#
+#
+#
+#
+#
+
 import platform
 import subprocess
 import os
