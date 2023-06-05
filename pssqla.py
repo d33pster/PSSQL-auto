@@ -2,8 +2,8 @@
 
 
 # ~~~~~~~~~~~~~~~~~~ Next Update ~~~~~~~~~~~~~~~~~~~
-# ~~~ add custom query
-# ~~~ add pipeline
+# ~~~ add custom query :: Check
+# ~~~ add pipeline ::
 # ~~~ colour coded menu
 # ~~~ refresh code placement
 #

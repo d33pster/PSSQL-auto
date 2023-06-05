@@ -140,29 +140,30 @@ def menu_startup():
     
 active = menu_startup()
 
+def customsave(query): #saving custom queries
+    return eval(query)
+
 def menu_load():
-        
+    print(green(f"active --> {active}", 'blink'))
     choice = menu()
     global active, file_count, output_dir
     #menu-driver
     refresh()
-    if choice==111:
+    if choice=='111':
         active = menu_startup()
         print(green("active DF changed!", 'blink'))
         time.sleep(2.6)
         refresh()
-        print(green(f"active --> {active}", 'blink'))
         menu_load()
-    elif choice==1: #show
+    elif choice=='1': #show
         for item in DataFrames:
             if item["Name"] == active:
                 print(magenta(f"DataFrame {active}:"))
                 print(item['df'].show())
                 code_choke = input(cyan("~Press Enter to continue~", 'blink'))
                 refresh()
-                print(green(f"active --> {active}", 'blink'))
                 menu_load()
-    elif choice==2: #del column
+    elif choice=='2': #del column
         dColumn = input(cyan("column to delete: "))
         for item in DataFrames:
             if item["Name"]==active:
@@ -171,45 +172,62 @@ def menu_load():
                 print(item["df"].show())
                 code_choke = input(cyan("~Press Enter to continue~", 'blink'))
                 refresh()
-                print(green(f"active --> {active}", 'blink'))
                 menu_load()
-    elif choice==3: #top10
+    elif choice=='3': #top10
         for item in DataFrames:
             if item["Name"]==active:
                 query = item["df"].select("*").limit(10)
                 query.show()
                 code_choke = input(cyan("~Press Enter to Continue~", 'blink'))
                 refresh()
-                print(green(f"active --> {active}", 'blink'))
                 menu_load()
-    elif choice==222: #export to csv
+    elif choice=='222': #export to csv
         for item in DataFrames:
             if item["Name"]==active:
                 filer(item["df"], output_dir)
                 refresh()
-                print(green(f"active --> {active}", 'blink'))
                 menu_load()
-    elif choice==333: #add more files
+    elif choice=='333': #add more files
         file_count = readFile(file_count)
         refresh()
         active = menu_startup()
         menu_load()
-    elif choice==444: #customize output dir
+    elif choice=='444': #customize output dir
         new_output_path = input(cyan("New Output Path: "))
         output_dir = new_output_path
         print(cyan(f"\nOutput Directory Changed to -> {output_dir}"))
         print(red("All further outputs will be saved Here!", 'blink'))
         time.sleep(4.5)
         refresh()
-        print(green(f"active --> {active}", 'blink'))
         menu_load()
-    elif choice==99:
+    elif choice=='q' or choice=='Q':
+        for item in DataFrames:
+            if item["Name"]==active:
+                global df
+                df = item["df"] #will be used as a decoy dataframe for custom query
+        print("Use df for queries ->")
+        print("example ->  df.select('*')")
+        customQuery = input(yellow("Custom Query")+yellow(" (pySpark SQL)", 'blink')+yellow(" ----> "))
+        customQuery_f = customQuery+".show()"
+        customSave = input(cyan("Do you want to save this result in the final dataframe?") + yellow(" (y/n) ::", 'blink'))
+        if customSave=='y' or customSave=='Y':
+            for item in DataFrames:
+                if item["Name"]==active:
+                    item["df"] = customsave(customQuery)
+        elif customSave=='n' or customSave=='N':
+            customQuery_f = None
+        else:
+            print("Value not Resolved... assuming No...")
+            time.sleep(3)
+        refresh()
+        menu_load()
+    elif choice=='x' or choice=='X':
         return
     else:
         print(red("Error!", 'bright'))
         print(yellow("RECONFIGURING...", 'blink'))
         time.sleep(3)
-        print(green(f"active --> {active}", 'blink'))
+        refresh()
         menu_load()
     return
 

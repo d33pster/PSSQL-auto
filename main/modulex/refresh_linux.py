@@ -7,4 +7,4 @@ def refresh_linux():
     caller = os.system("./main/logo.sh")
     if caller!=0:
         print("error code Lx")
-    print("\n")
+    print("\n", end="\n")
