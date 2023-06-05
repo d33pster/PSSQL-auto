@@ -53,7 +53,8 @@ def readFile(current_filecount) -> int:
         Filenames.append(temp)
     #Localising Filenames
     a=0
-    print(yellow("\nLocalising ...", 'blink'))
+    refresh_linux()
+    print(yellow("Localising ...", 'blink'))
     for item in Filenames:
         if a<current_filecount:
             a=a+1
@@ -95,7 +96,8 @@ def filer(DataFrame, output_direc):
         output_dir = os.path.join(os.path.join(os.getcwd(), "main"),"output-files")
     filepath = os.path.join(output_dir, file_name+".csv")
     if os.path.exists(filepath):
-        print(red(f"\nA File named {file_name} already exists..", 'blink')+cyan("\nPress 0 to overwrite :: Press 1 to create new:"))
+        refresh_linux()
+        print(red(f"A File named {file_name} already exists..", 'blink')+cyan("\nPress 0 to overwrite :: Press 1 to create new:"))
         filer_ch = int(input(":: "))
         if filer_ch==1:
             for i in range(100):

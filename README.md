@@ -9,3 +9,7 @@ ps. Eliminated the need to run more than 2 line of different commands in windows
 2. for Linux go to cloned directory and run the following commands ~
     ~ sudo chmod +x ./pssqla.py
     ~ sudo ./pssqla.py
+## clean
+1. as u may notice some files and folders are not accessible from the main folder
+2. to delete them use clean.py (in linux give perms using chmod, in windows type python before script path)
+3. to copy or move use administrator privilage (in linux use sudo)
