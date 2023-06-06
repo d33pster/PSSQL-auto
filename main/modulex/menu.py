@@ -11,8 +11,11 @@ def menu():
     
     print("\nQueries:", end="\n")
     print("[1] Show")
-    print("[2] Drop a column")
-    print("[3] Show top 10 entries")
+    print("[2] DataFrame Schema/Shape")
+    print("[3] Drop a column")
+    print("[4] Show top 10 entries")
+    
+    print("\n[p] Create a Pyspark Pipeline", end ="\n")
     
     print("\n[q] Custom Query", end ="\n")
     
@@ -21,4 +24,3 @@ def menu():
     print("\n")
     menu_choice = input("--> ")
     return menu_choice
-        

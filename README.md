@@ -1,5 +1,9 @@
-# PSSQL-auto v3.0
+# PSSQL-auto v3.2 Insructions
 This Project contains a python app for data analysis using Pyspark SQL
+# For First Use
+1. git clone the repo
+2. go to PSSQL-auto directory in terminal/cmd
+3. type prereq.py in cmd and hit enter OR type chmod +x ./prereq.py in Linux terminal hit enter and then type ./prereq.py and hit enter
 ## PREREQ
 1. need to uninstall all python dists below 3 (keep only the latest)
 2. need Java (installer added) with JAVA_HOME variable pointing to the installation folder without the /bin folder

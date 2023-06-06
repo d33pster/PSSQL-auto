@@ -6,15 +6,14 @@ import time
 from simple_colors import *
 
 from modulex.refresh_linux import refresh_linux
+from modulex.pipeline import pipelineINIT, pipelinePROVOKE
+
+
 
 #Initial Checking and installations...
 refresh_linux()
 print(red("Initialising...", 'blink'))
 time.sleep(2)
-print("\n")
-os.system('pip install --upgrade pip')
-os.system('pip install pyspark matplotlib')
-os.system('pip install --upgrade pyspark matplotlib')
 print("\n\n")
 #subprocess.run(['git', 'pull', 'https://github.com/d33pster/PSSQL-auto'], shell=True)
 if not os.path.exists(os.path.join(os.path.join(os.getcwd(),"main"), "usage-files")):
@@ -27,7 +26,6 @@ from pyspark.sql import SparkSession
 from pyspark.sql.functions import count, desc , col, max, struct
 import matplotlib.pyplot as plt
 
-#Input required processing data
 refresh_linux()
 
 #pyspark session
@@ -160,11 +158,20 @@ def menu_load():
         for item in DataFrames:
             if item["Name"] == active:
                 print(magenta(f"DataFrame {active}:"))
-                print(item['df'].show())
+                item['df'].show()
                 code_choke = input(cyan("~Press Enter to continue~", 'blink'))
                 refresh_linux()
                 menu_load()
-    elif choice=='2': #del column
+    elif choice=='2':
+        for item in DataFrames:
+            if item['Name']==active:
+                print(magenta(f"{item['Name']} Schema:", 'blink'))
+                item['df'].printSchema()
+                print(yellow(f"Shape: ({item['df'].count(), len(item['df'].columns)})"))
+                code_choke = input(cyan("\n~~Press Enter to Continue~~"))
+                refresh_linux()
+                menu_load()
+    elif choice=='3': #del column
         dColumn = input(cyan("column to delete: "))
         for item in DataFrames:
             if item["Name"]==active:
@@ -174,7 +181,7 @@ def menu_load():
                 code_choke = input(cyan("~Press Enter to continue~", 'blink'))
                 refresh_linux()
                 menu_load()
-    elif choice=='3': #top10
+    elif choice=='4': #top10
         for item in DataFrames:
             if item["Name"]==active:
                 query = item["df"].select("*").limit(10)
@@ -222,6 +229,14 @@ def menu_load():
             time.sleep(3)
         refresh_linux()
         menu_load()
+    elif choice=='p' or choice=='P':
+        for item in DataFrames:
+            if item['Name']==active:
+                pipelineINIT(item['df'])
+                pipelinePROVOKE(item['df'])
+                code_choke = input(cyan("~Press Enter to Continue~", 'blink'))
+                refresh_linux()
+                menu_load()
     elif choice=='x' or choice=='X':
         return
     else:

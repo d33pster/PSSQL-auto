@@ -7,6 +7,7 @@ import time
 from simple_colors import *
 
 from modulex.refresh import refresh
+from modulex.pipeline import pipelineINIT, pipelinePROVOKE
 
 #Initial Checking and installations...
 subprocess.run("cls", shell=True)
@@ -15,10 +16,6 @@ with open(os.path.join(os.path.join(os.getcwd(), "main"), "logo.txt")) as logo:
 print("\n")
 print(green("Initialising...", 'blink'))
 time.sleep(2)
-print("\n\n")
-subprocess.run(['python.exe', '-m', 'pip', 'install', '--upgrade', 'pip'], shell=True)
-subprocess.run(['pip', 'install', 'pyspark', 'matplotlib'], shell=True)
-subprocess.run(['pip', 'install', '--upgrade', 'pyspark', 'matplotlib'], shell=True)
 print("\n\n")
 #subprocess.run(['git', 'pull', 'https://github.com/d33pster/PSSQL-auto'], shell=True)
 if not os.path.exists(os.path.join(os.path.join(os.getcwd(),"main"), "usage-files")):
@@ -163,7 +160,16 @@ def menu_load():
                 code_choke = input(cyan("~Press Enter to continue~", 'blink'))
                 refresh()
                 menu_load()
-    elif choice=='2': #del column
+    elif choice=='2':
+        for item in DataFrames:
+            if item['Name']==active:
+                print(magenta(f"{item['Name']} Schema:", 'blink'))
+                item['df'].printSchema()
+                print(yellow(f"Shape: ({item['df'].count(), len(item['df'].columns)})"))
+                code_choke = input(cyan("\n~~Press Enter to Continue~~"))
+                refresh()
+                menu_load()            
+    elif choice=='3': #del column
         dColumn = input(cyan("column to delete: "))
         for item in DataFrames:
             if item["Name"]==active:
@@ -173,7 +179,7 @@ def menu_load():
                 code_choke = input(cyan("~Press Enter to continue~", 'blink'))
                 refresh()
                 menu_load()
-    elif choice=='3': #top10
+    elif choice=='4': #top10
         for item in DataFrames:
             if item["Name"]==active:
                 query = item["df"].select("*").limit(10)
@@ -221,6 +227,14 @@ def menu_load():
             time.sleep(3)
         refresh()
         menu_load()
+    elif choice=='p' or choice=='P':
+        for item in DataFrames:
+            if item['Name']==active:
+                pipelineINIT(item['df'])
+                pipelinePROVOKE(item['df'])
+                code_choke = input(cyan("~Press Enter to Continue~", 'blink'))
+                refresh()
+                menu_load()
     elif choice=='x' or choice=='X':
         return
     else:

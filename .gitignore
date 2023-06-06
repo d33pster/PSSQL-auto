@@ -5,4 +5,5 @@ main/output-files/
 tester.py
 pssqla.spec
 ideas.txt
-main/modulex/pipeline.py
+pipelines/
+pipeline-results/
