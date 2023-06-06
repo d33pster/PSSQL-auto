@@ -1,25 +1,26 @@
 #MENU
+from simple_colors import *
 
 def menu():
-    print("<-- Menu -->")
+    print(magenta("\n<-- Menu -->", 'blink'))
     
-    print("\nFunctions:", end="\n")
-    print("[111] Change active DataFrame")
-    print("[222] Export current DataFrame into .csv")
-    print("[333] Add more files")
-    print("[444] Make custom output directory") #/Move output files
+    print(yellow("\nFunctions:"), end="\n")
+    print(cyan("[111] Change active DataFrame"))
+    print(cyan("[222] Export current DataFrame into .csv"))
+    print(cyan("[333] Add more files"))
+    print(cyan("[444] Make custom output directory")) #/Move output files
     
-    print("\nQueries:", end="\n")
-    print("[1] Show")
-    print("[2] DataFrame Schema/Shape")
-    print("[3] Drop a column")
-    print("[4] Show top 10 entries")
+    print(yellow("\nQueries:"), end="\n")
+    print(cyan("[1] Show"))
+    print(cyan("[2] DataFrame Schema/Shape"))
+    print(cyan("[3] Drop a column"))
+    print(cyan("[4] Show top 10 entries"))
     
-    print("\n[p] Create a Pyspark Pipeline", end ="\n")
+    print(yellow("\n[p] Create a Pyspark Pipeline"), end ="\n")
     
-    print("\n[q] Custom Query", end ="\n")
+    print(yellow("\n[q] Custom Query"), end ="\n")
     
-    print("\n[x] Exit", end="\n")
+    print(red("\n[x] Exit"), end="\n")
     
     print("\n")
     menu_choice = input("--> ")

@@ -1,1 +1,1 @@
-PSSQL-AUTO v3.2 ~ author: d33pster/deep ~ email: deep.main.ac@gmail.com
+PSSQL-AUTO v3.4 ~ author: d33pster/deep ~ email: deep.main.ac@gmail.com

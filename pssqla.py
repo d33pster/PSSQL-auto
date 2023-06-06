@@ -2,11 +2,6 @@
 
 
 # ~~~~~~~~~~~~~~~~~~ Next Update ~~~~~~~~~~~~~~~~~~~
-# ~~~ add custom query :: Check
-# ~~~ add pipeline :: Check
-# ~~~ if only one file is inputted use that only
-# ~~~ colour coded menu
-# ~~~ refresh code placement
 #
 #
 #

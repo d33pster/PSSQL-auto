@@ -38,11 +38,15 @@ Filenames_lo = []
 DataFrames = []
 
 def readFile(current_filecount) -> int:
-    nf = int(input(cyan("Number of csv files to be imported\n:: ")))
+    global active
+    nf = int(input(cyan("Number of csv files to be imported :: ")))
     refresh_linux()
     count = nf + current_filecount
     for i in range(nf):
-        print(cyan(f"File [{i+1+current_filecount}] absolute path: "), end=" ")
+        if count==1:
+            print(cyan("Absolute FilePath:"), end=" ")
+        else:
+            print(cyan(f"File [{i+1+current_filecount}] absolute path:"), end=" ")
         file = input()
         #filename = file.split("\\")[-1]
         filename_wx = os.path.splitext(file)[0]
@@ -74,6 +78,20 @@ def readFile(current_filecount) -> int:
         print(yellow(f"Creating dataframe {itemz['Name']} from {filename} ..."))
         df_def = spark.read.format('csv').option('inferSchema', True).option('header', True).load(itemz["Location"])
         time.sleep(1)
+        
+        #The code trims and removes all whitespaces from every single column in your Dataframe.
+        print(red("Fixing Bad Columns if any ...")) 
+        tempList = [] #Edit01
+        for col in df_def.columns:
+            new_name = col.strip()
+            new_name = "".join(new_name.split())
+            new_name = new_name.replace('.','') 
+            tempList.append(new_name) 
+
+        df_def = df_def.toDF(*tempList)
+        
+        
+        
         print(yellow(f"Dropping Null rows..."))
         df_def = df_def.na.drop()
         time.sleep(1)
@@ -81,6 +99,11 @@ def readFile(current_filecount) -> int:
         DataFrames.append(temp)
     print(green("\nDataframes created and stored Successfully.."))
     time.sleep(2)
+    
+    if count==1:
+        for item in DataFrames:
+            active=item['Name']
+    
     return count
 
 file_count = readFile(0) #init
@@ -126,7 +149,7 @@ def filer(DataFrame, output_direc):
 from modulex.menu import menu
 def menu_startup():
     refresh_linux()
-    print(green("Following DataFrames are available for Processing ..."))
+    print(green("Following DataFrames are available for further Processing ..."))
     i=0
     for item in DataFrames:
         print(f"[DataFrame {i+1}]" + green(f" {item['Name']}"))
@@ -136,8 +159,18 @@ def menu_startup():
     print("\n")
     refresh_linux()
     return menu_df_active
-    
-active = menu_startup()
+
+if file_count!=1:  
+    active = menu_startup()
+elif file_count==1:
+    refresh_linux()
+    print(red("Only one Data File has been Processed."))
+    time.sleep(0.8)
+    print(yellow("Assigning active automatically ..."))
+    time.sleep(3)
+    print(magenta(f"\nactive --> {active}", 'blink')+green("\n\nResolved.")) #decoy #real thing is done in readFile() @ end
+    time.sleep(5)
+    refresh_linux()
 
 def customsave(query): #saving custom queries
     return eval(query)
