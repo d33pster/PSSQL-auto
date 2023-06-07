@@ -81,16 +81,16 @@ def readFile(current_filecount) -> int:
         df = spark.read.format('csv').option('inferSchema', True).option('header', True).load(itemz["Location"])
         time.sleep(1)
         
-        #The code trims and removes all whitespaces from every single column in your Dataframe.
-        print(red("Fixing Bad Columns if any ...")) #The code trims and removes all whitespaces from every single column in your Dataframe.
-        tempList = [] #Edit01
-        for col in df_def.columns:
-            new_name = col.strip()
-            new_name = "".join(new_name.split())
-            new_name = new_name.replace('.','') 
-            tempList.append(new_name) 
+        # #The code trims and removes all whitespaces from every single column in your Dataframe.
+        # print(red("Fixing Bad Columns if any ...")) #The code trims and removes all whitespaces from every single column in your Dataframe.
+        # tempList = [] #Edit01
+        # for col in df_def.columns:
+        #     new_name = col.strip()
+        #     new_name = "".join(new_name.split())
+        #     new_name = new_name.replace('.','') 
+        #     tempList.append(new_name) 
 
-        df_def = df_def.toDF(*tempList)
+        # df_def = df_def.toDF(*tempList)
         
         
         print(yellow(f"Dropping Null rows...", 'bright'))
@@ -167,12 +167,10 @@ elif file_count==1:
     time.sleep(0.8)
     print(yellow("Assigning active automatically ..."))
     time.sleep(3)
-    print(magenta(f"\nactive --> {active}", 'blink')+green("\n\nResolved.")) #decoy #real thing is done in readFile() @ end
+    print(green("\nResolved")+magenta(f"\n\nactive --> {active}", 'blink')) #decoy #real thing is done in readFile() @ end
     time.sleep(5)
     refresh()
 
-def customsave(query): #saving custom queries
-    return eval(query)
 
 def menu_load():
     print(green(f"active --> {active}", 'blink'))
@@ -248,14 +246,14 @@ def menu_load():
         print("Use df for queries ->")
         print("example ->  df.select('*')")
         customQuery = input(yellow("Custom Query")+yellow(" (pySpark SQL)", 'blink')+yellow(" ----> "))
-        customQuery_f = customQuery+".show()"
         customSave = input(cyan("Do you want to save this result in the final dataframe?") + yellow(" (y/n) ::", 'blink'))
         if customSave=='y' or customSave=='Y':
             for item in DataFrames:
                 if item["Name"]==active:
-                    item["df"] = customsave(customQuery)
+                    item["df"] = eval(customQuery)
         elif customSave=='n' or customSave=='N':
-            customQuery_f = None
+            customQuery_f = eval(customQuery+".show()")
+            code_choke = input(cyan("\n~~Press Enter to Continue~~"))
         else:
             print("Value not Resolved... assuming No...")
             time.sleep(3)

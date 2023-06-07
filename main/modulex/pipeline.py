@@ -101,25 +101,20 @@ def pipelinePROVOKE(df):
     
     with alive_bar(100, bar='smooth') as bar:
         paramGrid = ParamGridBuilder().addGrid(regressor.numTrees, [10, 50, 100, 500, 1000]).build()
-        time.sleep(2)
         bar(14)
         crossval = CrossValidator(estimator=pipelineModel, estimatorParamMaps=paramGrid, evaluator=RegressionEvaluator(labelCol=LabelCol), numFolds=15)
-        time.sleep(2.5)
         bar(14)
         df_temp = df
         train_data, test_data = df_temp.randomSplit([0.8,0.2], seed=1)
-        time.sleep(1)
         bar(10)
         with bar.pause():
             Model = crossval.fit(train_data)
             bestModel = Model.bestModel
-        time.sleep(1)
         bar(20)
         pred = Model.transform(test_data)
-        time.sleep(4)
         bar(42)
-        time.sleep(4)
-        
+    
+    time.sleep(4)
     refresher()
     print(magenta(f"The Pipeline model {pipelineNAME} predicts..."))
     pred.select(LabelCol, 'prediction').show()

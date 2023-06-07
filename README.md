@@ -1,4 +1,4 @@
-# PSSQL-auto v3.4 Insructions
+# PSSQL-auto v3.5 Insructions
 This Project contains a python app for data analysis using Pyspark SQL
 ## PREREQ
 1. need to uninstall all python dists below 3 (keep only the latest)

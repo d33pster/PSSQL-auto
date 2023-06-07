@@ -11,6 +11,6 @@ echo "
 ░░       ░  ░  ░  ░  ░  ░     ░   ░   ░ ░        ░   ▒    ░░░ ░ ░   ░      ░ ░ ░ ▒  
                ░        ░      ░        ░  ░         ░  ░   ░                  ░ ░  "
                
-echo "version 3.4"
+echo "version 3.5"
 echo "author: d33pster/Deep"
 echo "email: deep.main.ac@gmail.com"
