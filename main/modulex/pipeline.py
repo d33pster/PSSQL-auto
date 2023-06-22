@@ -81,7 +81,7 @@ def pipelineINIT(df):
     assembler = VectorAssembler(inputCols=InputCol, outputCol='Attributes')
     regressor = RandomForestRegressor(featuresCol='Attributes', labelCol=LabelCol)
     pipeline = Pipeline(stages = [assembler, regressor])
-    pipelinePATH = os.path.join(os.path.join(os.getcwd(), 'main'), 'pipelines')
+    pipelinePATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'pipelines')
     pipelineNAME = input(yellow("Pipeline Name: ", 'blink'))
     
     if not os.path.exists(pipelinePATH):
@@ -95,7 +95,7 @@ def pipelineINIT(df):
 def pipelinePROVOKE(df):
     global pipelineNAME, regressor, LabelCol
     
-    pipelineModel = Pipeline.load(os.path.join(os.path.join(os.path.join(os.getcwd(), 'main'), 'pipelines'), pipelineNAME))
+    pipelineModel = Pipeline.load(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'pipelines' ,pipelineNAME))
     
     print(red("Training...", 'blink'))
     
@@ -121,10 +121,10 @@ def pipelinePROVOKE(df):
     result = eval("pred.select(LabelCol, 'prediction')")
     
     
-    if not os.path.exists(os.path.join(os.path.join(os.getcwd(),'main'), 'pipeline-results')):
-        os.mkdir(os.path.join(os.path.join(os.getcwd(),'main'), 'pipeline-results'))
+    if not os.path.exists(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'pipeline-results')):
+        os.mkdir(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'pipeline-results'))
      
-    result_location = os.path.join(os.path.join(os.path.join(os.getcwd(),'main'), 'pipeline-results'), pipelineNAME+"-results.csv")
+    result_location = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'pipeline-results', pipelineNAME+"-results.csv")
     print(f"Saving Results to {result_location} ...")
     result.toPandas().to_csv(result_location)
     

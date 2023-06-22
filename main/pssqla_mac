@@ -1,0 +1,296 @@
+#!/usr/bin/env python3
+
+#default packages
+import os
+import time
+from simple_colors import *
+
+from modulex.refresh_linux import refresh_linux
+from modulex.pipeline import pipelineINIT, pipelinePROVOKE
+
+
+
+#Initial Checking and installations...
+refresh_linux()
+print(yellow("Initialising...", 'blink'))
+time.sleep(2)
+print("\n\n")
+#subprocess.run(['git', 'pull', 'https://github.com/d33pster/PSSQL-auto'], shell=True)
+if not os.path.exists(os.path.join(os.path.dirname(os.path.abspath(__file__)), "usage-files")):
+    os.mkdir(os.path.join(os.path.dirname(os.path.abspath(__file__)), "usage-files"))
+if not os.path.exists(os.path.join(os.path.dirname(os.path.abspath(__file__)), "output-files")):
+    os.mkdir(os.path.join(os.path.dirname(os.path.abspath(__file__)), "output-files"))
+
+#Import installed packages...
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import count, desc , col, max, struct
+import matplotlib.pyplot as plt
+
+refresh_linux()
+
+#pyspark session
+spark = SparkSession.builder.appName("PSSQLA").getOrCreate()
+refresh_linux()
+
+#storing file locations
+Filenames = []
+Filenames_lo = []
+DataFrames = []
+
+def readFile(current_filecount) -> int:
+    global active
+    nf = int(input(cyan("Number of csv files to be imported :: ")))
+    refresh_linux()
+    count = nf + current_filecount
+    for i in range(nf):
+        if count==1:
+            print(cyan("Absolute FilePath:"), end=" ")
+        else:
+            print(cyan(f"File [{i+1+current_filecount}] absolute path:"), end=" ")
+        file = input()
+        #filename = file.split("\\")[-1]
+        filename_wx = os.path.splitext(file)[0]
+        filename_wx = filename_wx.split("/")[-1]
+        temp = {"Name": filename_wx, "Location": file}
+        Filenames.append(temp)
+    #Localising Filenames
+    a=0
+    refresh_linux()
+    print(yellow("Localising ...", 'blink'))
+    for item in Filenames:
+        if a<current_filecount:
+            a=a+1
+            continue
+        caller = os.system(f"cp {item['Location']} {os.path.join(os.path.join(os.path.join(os.getcwd(), 'main'),'usage-files'), item['Location'].split('/')[-1])}")
+        time.sleep(1.5)
+        temp = {"Name": item["Name"], "Location": os.path.join(os.path.join(os.path.join(os.getcwd(), "main"),"usage-files"), item["Location"].split("/")[-1])}
+        Filenames_lo.append(temp)
+    refresh_linux()
+    #Creating data frames...
+    print(yellow("Processing...", 'blink'))
+    time.sleep(1)
+    a=0
+    for itemz in Filenames_lo:
+        if a<current_filecount:
+            a=a+1
+            continue
+        filename = itemz['Location'].split('/')[-1]
+        print(yellow(f"Creating dataframe {itemz['Name']} from {filename} ..."))
+        df_def = spark.read.format('csv').option('inferSchema', True).option('header', True).load(itemz["Location"])
+        time.sleep(1)
+        
+        # #The code trims and removes all whitespaces from every single column in your Dataframe.
+        # print(red("Fixing Bad Columns if any ...")) 
+        # tempList = [] #Edit01
+        # for col in df_def.columns:
+        #     new_name = col.strip()
+        #     new_name = "".join(new_name.split())
+        #     new_name = new_name.replace('.','') 
+        #     tempList.append(new_name) 
+
+        # df_def = df_def.toDF(*tempList)
+        
+        
+        
+        print(yellow(f"Dropping Null rows..."))
+        df_def = df_def.na.drop()
+        time.sleep(1)
+        temp = {"Name": itemz["Name"], "df": df_def}
+        DataFrames.append(temp)
+    print(cyan("\nDataframes created and stored Successfully..", 'bright'))
+    time.sleep(2)
+    
+    if count==1:
+        for item in DataFrames:
+            active=item['Name']
+    
+    return count
+
+file_count = readFile(0) #init
+output_dir = None
+#creating filer for menu
+def filer(DataFrame, output_direc):
+    global output_dir
+    output_dir = output_direc
+    file_name = input(cyan("filename (W/O extention): "))
+    if output_dir==None:
+        output_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)),"output-files")
+    filepath = os.path.join(output_dir, file_name+".csv")
+    if os.path.exists(filepath):
+        refresh_linux()
+        print(yellow(f"A File named {file_name} already exists..", 'blink')+cyan("\nPress 0 to overwrite :: Press 1 to create new:"))
+        filer_ch = int(input(":: "))
+        if filer_ch==1:
+            for i in range(100):
+                if i==0:
+                    continue
+                suffix = str(i)
+                filepath_tmp = os.path.join(output_dir, file_name+"["+suffix+"].csv")
+                if not os.path.exists(filepath_tmp):
+                    DataFrame.toPandas().to_csv(filepath_tmp)
+                    print(cyan(f"\nFile Exported Succesfully to {filepath_tmp}", 'bright'))
+                    code_choke = input(cyan("\n~~Press Enter to Continue~~", 'blink'))
+                    break
+        elif filer_ch==0:
+            DataFrame.toPandas().to_csv(filepath)
+            print(cyan(f"\nFile Exported Succesfully to {filepath}", 'bright'))
+            code_choke = input(cyan("\n~~Press Enter to Continue~~", 'blink'))
+        else:
+            print(yellow("Invalid Input!", 'blink'))
+            print(cyan("RECONFIGURING FROM LAST CHECKPOINT....", ['bright', 'blink']))
+            time.sleep(4)
+            filer(DataFrame, output_dir)
+    else:
+        DataFrame.toPandas().to_csv(filepath)
+        print(cyan(f"\nFile Exported Succesfully to {filepath}", 'bright'))
+        code_choke = input(cyan("\n~~Press Enter to Continue~~", 'blink'))
+
+#Creating menu
+from modulex.menu import menu
+def menu_startup():
+    refresh_linux()
+    print(cyan("Following DataFrames are available for further Processing ...", 'bright'))
+    i=0
+    for item in DataFrames:
+        print(f"[DataFrame {i+1}]" + green(f" {item['Name']}", 'bright'))
+        i=i+1
+    print("\n")
+    menu_df_active = input(cyan("Use (name)--> ", 'blink'))   #Active DF
+    print("\n")
+    refresh_linux()
+    return menu_df_active
+
+if file_count!=1:  
+    active = menu_startup()
+elif file_count==1:
+    refresh_linux()
+    print(yellow("Only one Data File has been Processed."))
+    time.sleep(0.8)
+    print(yellow("Assigning active automatically ..."))
+    time.sleep(3)
+    print(cyan("\nResolved", 'bright')+magenta(f"\n\nactive --> {active}", 'blink')) #decoy #real thing is done in readFile() @ end
+    time.sleep(5)
+    refresh_linux()
+
+
+def menu_load():
+    global active, file_count, output_dir
+    print(cyan(f"active --> {active}", ['blink', 'bright']))
+    choice = menu()
+    #menu-driver
+    refresh_linux()
+    if choice=='111':
+        active = menu_startup()
+        print(yellow("active DF changed!", 'blink'))
+        time.sleep(2.6)
+        refresh_linux()
+        menu_load()
+    elif choice=='1': #show
+        for item in DataFrames:
+            if item["Name"] == active:
+                print(magenta(f"DataFrame {active}:"))
+                item['df'].show()
+                code_choke = input(cyan("~Press Enter to continue~", 'blink'))
+                refresh_linux()
+                menu_load()
+    elif choice=='2':
+        for item in DataFrames:
+            if item['Name']==active:
+                print(magenta(f"{item['Name']} Schema:", 'blink'))
+                item['df'].printSchema()
+                print(yellow(f"Shape: ({item['df'].count(), len(item['df'].columns)})"))
+                code_choke = input(cyan("\n~~Press Enter to Continue~~"))
+                refresh_linux()
+                menu_load()
+    elif choice=='3': #del column
+        dColumn = input(cyan("column to delete: "))
+        for item in DataFrames:
+            if item["Name"]==active:
+                item["df"] = item["df"].drop(dColumn)
+                print(cyan("<-- Resulting DataFrame -->", 'blink'))
+                print(item["df"].show())
+                code_choke = input(cyan("~Press Enter to continue~", 'blink'))
+                refresh_linux()
+                menu_load()
+    elif choice=='4': #top10
+        for item in DataFrames:
+            if item["Name"]==active:
+                query = item["df"].select("*").limit(10)
+                query.show()
+                code_choke = input(cyan("~Press Enter to Continue~", 'blink'))
+                refresh_linux()
+                menu_load()
+    elif choice=='222': #export to csv
+        for item in DataFrames:
+            if item["Name"]==active:
+                filer(item["df"], output_dir)
+                refresh_linux()
+                menu_load()
+    elif choice=='333': #add more files
+        file_count = readFile(file_count)
+        refresh_linux()
+        active = menu_startup()
+        menu_load()
+    elif choice=='444': #customize output dir
+        new_output_path = input(cyan("New Output Path: "))
+        output_dir = new_output_path
+        print(yellow(f"\nOutput Directory Changed to -> {output_dir}"))
+        print(yellow("All further outputs will be saved Here!", ['bright', 'blink']))
+        time.sleep(4.5)
+        refresh_linux()
+        menu_load()
+    elif choice=='q' or choice=='Q':
+        for item in DataFrames:
+            if item["Name"]==active:
+                global df
+                df = item["df"] #will be used as a decoy dataframe for custom query
+        print("Use df for queries ->")
+        print("example ->  df.select('*')")
+        customQuery = input(yellow("Custom Query")+yellow(" (pySpark SQL)", 'blink')+yellow(" ----> "))
+        customSave = input(cyan("Do you want to save this result in the final dataframe?") + yellow(" (y/n) ::", 'blink'))
+        if customSave=='y' or customSave=='Y':
+            for item in DataFrames:
+                if item["Name"]==active:
+                    item["df"] = eval(customQuery)
+        elif customSave=='n' or customSave=='N':
+            customQuery_f = eval(customQuery+".show()")
+            code_choke = input(cyan("~Press Enter to Continue~", 'blink'))
+        else:
+            print("Value not Resolved... assuming No...")
+            time.sleep(3)
+        refresh_linux()
+        menu_load()
+    elif choice=='p' or choice=='P':
+        for item in DataFrames:
+            if item['Name']==active:
+                pipelineINIT(item['df'])
+                pipelinePROVOKE(item['df'])
+                code_choke = input(cyan("~Press Enter to Continue~", 'blink'))
+                refresh_linux()
+                menu_load()
+    elif choice=='x' or choice=='X':
+        return
+    else:
+        print(yellow("Error!", 'blink'))
+        print(cyan("RECONFIGURING...", 'bright'))
+        time.sleep(3)
+        refresh_linux()
+        menu_load()
+    return
+
+menu_load()
+
+#concluder
+def concluder(): 
+    print(yellow("\nCleaning Up...", 'blink'))
+    time.sleep(2)
+    for item in Filenames_lo:
+        os.remove(item['Location'])
+        print(yellow(f"Deleted {item['Name']} from local directory {item['Location']}.", 'bright'))
+    time.sleep(3)
+    refresh_linux()
+    print(cyan("\nQuiting..."))
+    time.sleep(2)
+    os.system("clear")
+    
+concluder()

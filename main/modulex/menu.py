@@ -20,7 +20,7 @@ def menu():
     
     print(yellow("\n[q] Custom Query"), end ="\n")
     
-    print(red("\n[x] Exit"), end="\n")
+    print(magenta("\n[x] Exit", 'bright'), end="\n")
     
     print("\n")
     menu_choice = input("--> ")
