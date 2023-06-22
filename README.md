@@ -11,7 +11,7 @@ This Project contains a python app for data analysis using Pyspark SQL
 4. for macOS, run ```sudo chmod +x ./prereq.py``` and then ```./prereq.py```. 
 ## Run
 ps. Eliminated the need to run more than 2 line of different commands in windows and linux
-1. for Windows simply go to cloned directory (PSSQL-auto) and run "python pssqla.py" in CMD
+1. for Windows simply go to cloned directory (PSSQL-auto) and run ```python pssqla.py``` in CMD
 2. for Linux go to cloned directory and run the following commands in terminal~
     ~ ```sudo chmod +x ./pssqla.py```
     ~ ```sudo ./pssqla.py```
